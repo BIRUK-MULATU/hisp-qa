@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* HIS Ethiopia colors */
+:root {
+  --hisp-blue: #0055A4;
+  --hisp-yellow: #FFD100;
+  --hisp-gray: #F5F5F5;
+}
+
+.bg-hispBlue { background-color: var(--hisp-blue); }
+.text-hispBlue { color: var(--hisp-blue); }
+.bg-hispYellow { background-color: var(--hisp-yellow); }
+.text-hispYellow { color: var(--hisp-yellow); }
+.bg-hispGray { background-color: var(--hisp-gray); }
