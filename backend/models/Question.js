@@ -3,10 +3,8 @@ const mongoose = require('mongoose');
 const QuestionSchema = new mongoose.Schema({
   title: { type: String, required: true },
   body: { type: String, required: true },
-  tags: [String],
-  category: { type: String, default: "General" }, // ✅ fixed
-  votes: { type: Number, default: 0 },
-  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  topic: { type: mongoose.Schema.Types.ObjectId, ref: "Topic", required: false },
+  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: false }, 
   createdAt: { type: Date, default: Date.now }
 });
 
