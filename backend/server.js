@@ -22,6 +22,12 @@ app.use('/api/topics', topicRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/users', userRoutes);
 
+// Root test route
+app.get('/api', (req, res) => {
+  res.json({ message: "API is running" });
+});
+
+
 // health
 app.get('/api/health', (req, res) => res.json({ ok: true }));
 
