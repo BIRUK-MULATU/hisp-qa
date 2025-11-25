@@ -1,11 +1,15 @@
-const router = require("express").Router();
-const auth = require("../middleware/auth");
-const admin = require("../middleware/admin");
-const topicCtrl = require("../controllers/topicController");
+const express = require('express');
+const router = express.Router();
+const topicController = require('../controllers/topicController');
+const auth = require('../middleware/authMiddleware');
+const admin = require('../middleware/adminMiddleware');
 
-router.get("/", topicCtrl.getTopics);
-router.post("/", auth, admin, topicCtrl.createTopic);
-router.put("/:id", auth, admin, topicCtrl.updateTopic);
-router.delete("/:id", auth, admin, topicCtrl.deleteTopic);
+// public
+router.get('/', topicController.getTopics);
+
+// admin only
+router.post('/', auth, admin, topicController.createTopic);
+router.put('/:id', auth, admin, topicController.updateTopic);
+router.delete('/:id', auth, admin, topicController.deleteTopic);
 
 module.exports = router;

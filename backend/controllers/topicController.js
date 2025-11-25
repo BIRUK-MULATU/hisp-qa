@@ -1,13 +1,21 @@
-const Topic = require("../models/Topic");
+const Topic = require('../models/Topic');
 
 exports.getTopics = async (req, res) => {
-  const topics = await Topic.find().sort({ name: 1 });
-  res.json(topics);
+  try {
+    const topics = await Topic.find().sort({ title: 1 });
+    res.json(topics);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 };
 
 exports.createTopic = async (req, res) => {
   try {
-    const topic = new Topic({ name: req.body.name });
+    const { title, description } = req.body;
+    if (!title) return res.status(400).json({ message: 'Title required' });
+    const exist = await Topic.findOne({ title });
+    if (exist) return res.status(400).json({ message: 'Topic already exists' });
+    const topic = new Topic({ title, description: description || '' });
     await topic.save();
     res.status(201).json(topic);
   } catch (err) {
@@ -17,7 +25,12 @@ exports.createTopic = async (req, res) => {
 
 exports.updateTopic = async (req, res) => {
   try {
-    const topic = await Topic.findByIdAndUpdate(req.params.id, { name: req.body.name }, { new: true });
+    const topic = await Topic.findById(req.params.id);
+    if (!topic) return res.status(404).json({ message: 'Topic not found' });
+    const { title, description } = req.body;
+    if (title) topic.title = title;
+    if (description !== undefined) topic.description = description;
+    await topic.save();
     res.json(topic);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -26,8 +39,10 @@ exports.updateTopic = async (req, res) => {
 
 exports.deleteTopic = async (req, res) => {
   try {
-    await Topic.findByIdAndDelete(req.params.id);
-    res.json({ message: "Topic deleted" });
+    const topic = await Topic.findById(req.params.id);
+    if (!topic) return res.status(404).json({ message: 'Topic not found' });
+    await topic.deleteOne();
+    res.json({ message: 'Topic deleted' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

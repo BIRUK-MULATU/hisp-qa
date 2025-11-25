@@ -1,11 +1,27 @@
-const router = require("express").Router();
-const auth = require("../middleware/auth");
-const qCtrl = require("../controllers/questionController");
+const express = require('express');
+const router = express.Router();
+const questionController = require('../controllers/questionController');
+const auth = require('../middleware/authMiddleware');
 
-// Anyone can create a question (no login required)
-router.post("/", qCtrl.createQuestion);
+// public: list
+router.get('/', questionController.getAllQuestions);
 
-router.get("/", qCtrl.getAllQuestions);
-router.get("/:id", qCtrl.getSingleQuestion);
+// search
+router.get('/search', questionController.searchQuestions);
+
+// public: get single
+router.get('/:id', questionController.getQuestionById);
+
+// create question: guest allowed (but if user is logged in we can set req.user by using auth optionally)
+// We'll allow both: if Authorization provided, authMiddleware sets req.user, otherwise next without error.
+const optionalAuth = async (req, res, next) => {
+  const header = req.header('Authorization');
+  if (!header) return next();
+  // require middleware
+  return require('../middleware/authMiddleware')(req, res, next);
+};
+
+// Create question: works for both guest and logged-in users
+router.post('/', optionalAuth, questionController.createQuestion);
 
 module.exports = router;

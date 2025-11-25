@@ -1,8 +1,12 @@
-const router = require("express").Router();
-const auth = require("../middleware/auth");
-const aCtrl = require("../controllers/answerController");
+const express = require('express');
+const router = express.Router();
+const answerController = require('../controllers/answerController');
+const auth = require('../middleware/authMiddleware');
 
-// MUST BE LOGGED IN to answer
-router.post("/:questionId", auth, aCtrl.createAnswer);
+// Post answer -> logged in required
+router.post('/:questionId', auth, answerController.createAnswer);
+
+// Get answers for question (public)
+router.get('/:questionId', answerController.getAnswersForQuestion);
 
 module.exports = router;
