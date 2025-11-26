@@ -1,35 +1,65 @@
-import { useState, useContext } from "react";
-import { AuthContext } from "../context/AuthContext";
-import API from "../api/api";
-import { useNavigate } from "react-router-dom";
+// src/pages/Signup.jsx
+import React, { useState, useContext } from 'react';
+import { AuthContext } from '../context/AuthContext';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Signup = () => {
-  const { login } = useContext(AuthContext);
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const { signup } = useContext(AuthContext);
   const navigate = useNavigate();
-  const [form, setForm] = useState({ name: "", email: "", password: "" });
-
-  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await API.post("/auth/signup", form);
-      login(res.data.user, res.data.token);
-      navigate("/");
+      await signup(name, email, password);
+      navigate('/');
     } catch (err) {
-      alert(err.response?.data?.message || err.message);
+      alert('Signup failed. Try again.');
     }
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-hispGray">
-      <form onSubmit={handleSubmit} className="bg-white p-8 rounded shadow-md w-96">
-        <h2 className="text-2xl font-bold mb-6 text-hispBlue">Signup</h2>
-        <input type="text" name="name" placeholder="Name" value={form.name} onChange={handleChange} className="w-full p-2 mb-4 border rounded"/>
-        <input type="email" name="email" placeholder="Email" value={form.email} onChange={handleChange} className="w-full p-2 mb-4 border rounded"/>
-        <input type="password" name="password" placeholder="Password" value={form.password} onChange={handleChange} className="w-full p-2 mb-4 border rounded"/>
-        <button type="submit" className="bg-hispBlue w-full p-2 text-white rounded">Signup</button>
-      </form>
+    <div className="max-w-md mx-auto mt-20">
+      <div className="card">
+        <h2 className="text-3xl font-bold text-center mb-8 text-hispDark">Create Account</h2>
+        <form onSubmit={handleSubmit}>
+          <input
+            type="text"
+            placeholder="Full Name"
+            value={name}
+            onChange={e => setName(e.target.value)}
+            className="w-full px-4 py-3 border rounded-lg mb-4 focus:outline-none focus:border-hispBlue"
+            required
+          />
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            className="w-full px-4 py-3 border rounded-lg mb-4 focus:outline-none focus:border-hispBlue"
+            required
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            className="w-full px-4 py-3 border rounded-lg mb-6 focus:outline-none focus:border-hispBlue"
+            required
+          />
+          <button type="submit" className="w-full btn-primary">
+            Sign Up
+          </button>
+        </form>
+        <p className="text-center mt-6 text-gray-600">
+          Already have an account?{' '}
+          <Link to="/login" className="text-hispBlue font-medium hover:underline">
+            Login here
+          </Link>
+        </p>
+      </div>
     </div>
   );
 };

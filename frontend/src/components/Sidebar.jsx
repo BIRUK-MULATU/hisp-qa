@@ -1,28 +1,46 @@
-import { useEffect, useState } from "react";
-import API from "../api/api";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from 'react';
+import API from '../api/api';
+import { Plus } from 'lucide-react';
 
-const Sidebar = () => {
+const Sidebar = ({ onTopicSelect, onAskClick }) => {
   const [topics, setTopics] = useState([]);
 
   useEffect(() => {
-    API.get("/topics")
+    API.get('/topics')
       .then(res => setTopics(res.data))
-      .catch(err => console.error(err));
+      .catch(() => {});
   }, []);
 
   return (
-    <aside className="bg-gray-100 p-4 w-64">
-      <h2 className="font-bold mb-4">Topics</h2>
-      <ul>
-        {topics.map(t => (
-          <li key={t._id} className="mb-2">
-            <Link to={`/create-question?topic=${t._id}`} className="hover:underline">{t.name}</Link>
-          </li>
-        ))}
-      </ul>
-      <hr className="my-4"/>
-      <Link to="/create-question" className="font-bold text-blue-600 hover:underline">Ask About Anything</Link>
+    <aside className="w-64 bg-hispBlue text-white min-h-screen fixed top-16 left-0 hidden lg:block overflow-y-auto">
+      <div className="p-6">
+        <h2 className="text-xl font-bold mb-6">Topics</h2>
+        <nav className="space-y-1">
+          <button
+            onClick={() => onTopicSelect(null)}
+            className="w-full text-left px-4 py-3 rounded-lg hover:bg-hispGreen transition font-medium"
+          >
+            All Questions
+          </button>
+          {topics.map(topic => (
+            <button
+              key={topic._id}
+              onClick={() => onTopicSelect(topic)}
+              className="w-full text-left px-4 py-3 rounded-lg hover:bg-hispGreen transition"
+            >
+              {topic.title}
+            </button>
+          ))}
+        </nav>
+
+        <button
+          onClick={onAskClick}
+          className="mt-10 w-full bg-hispGreen py-4 rounded-lg font-bold hover:bg-green-600 transition flex items-center justify-center space-x-2"
+        >
+          <Plus className="h-6 w-6" />
+          <span>Ask About Anything</span>
+        </button>
+      </div>
     </aside>
   );
 };

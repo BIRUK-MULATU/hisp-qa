@@ -1,28 +1,30 @@
-import { useContext, useState } from "react";
-import { AuthContext } from "../context/AuthContext";
-import { Link } from "react-router-dom";
+import React from 'react';
+import { LogOut, User, Shield } from 'lucide-react';
+import { useContext } from 'react';
+import { AuthContext } from '../context/AuthContext';
+import { Link } from 'react-router-dom';
 
-const ProfileDropdown = () => {
+const ProfileDropdown = ({ isOpen }) => {
   const { user, logout } = useContext(AuthContext);
-  const [open, setOpen] = useState(false);
 
-  if (!user) return null;
+  if (!isOpen) return null;
 
   return (
-    <div className="relative">
-      <button onClick={() => setOpen(!open)} className="flex items-center space-x-2">
-        <img src={user.avatarUrl || "/avatar.png"} alt="avatar" className="w-8 h-8 rounded-full"/>
-        <span>{user.name}</span>
-      </button>
-
-      {open && (
-        <div className="absolute right-0 mt-2 w-48 bg-white shadow-md rounded py-2 z-10">
-          <Link to="/my-questions" className="block px-4 py-2 hover:bg-gray-100">My Questions</Link>
-          <Link to="/my-answers" className="block px-4 py-2 hover:bg-gray-100">My Answers</Link>
-          {user.role === "admin" && <Link to="/admin" className="block px-4 py-2 hover:bg-gray-100">Admin Panel</Link>}
-          <button onClick={logout} className="w-full text-left px-4 py-2 hover:bg-gray-100">Logout</button>
-        </div>
-      )}
+    <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border z-50">
+      <div className="p-4 border-b">
+        <p className="font-semibold">{user.name}</p>
+        <p className="text-sm text-gray-600">{user.email}</p>
+      </div>
+      <div className="py-2">
+        {user.isAdmin && (
+          <Link to="/admin" className="flex items-center px-4 py-2 hover:bg-gray-100">
+            <Shield className="h-4 w-4 mr-2" /> Admin Panel
+          </Link>
+        )}
+        <button onClick={logout} className="w-full flex items-center px-4 py-2 hover:bg-gray-100 text-left">
+          <LogOut className="h-4 w-4 mr-2" /> Logout
+        </button>
+      </div>
     </div>
   );
 };
