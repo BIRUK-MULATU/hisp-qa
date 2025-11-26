@@ -8,4 +8,6 @@ const QuestionSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now }
 });
 
+
+// Text index for fast searching
 module.exports = mongoose.model('Question', QuestionSchema);

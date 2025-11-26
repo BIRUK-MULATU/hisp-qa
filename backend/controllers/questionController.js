@@ -47,13 +47,22 @@ exports.getQuestionById = async (req, res) => {
   }
 };
 
+
+
+// In searchQuestions():
 exports.searchQuestions = async (req, res) => {
   try {
     const { q } = req.query;
-    if (!q) return res.status(400).json({ message: 'Search query required' });
-    // simple text search on title or body (add indexes if needed)
-    const regex = new RegExp(q, 'i');
-    const questions = await Question.find({ $or: [{ title: regex }, { body: regex }] }).sort({ createdAt: -1 }).populate('topic').lean();
+    if (!q?.trim()) return res.status(400).json({ message: 'Search query required' });
+
+    const questions = await Question.find(
+      { $text: { $search: q } },
+      { score: { $meta: "textScore" } }
+    )
+      .sort({ score: { $meta: "textScore" }, createdAt: -1 })
+      .populate('topic')
+      .lean();
+
     res.json(questions);
   } catch (err) {
     res.status(500).json({ error: err.message });
