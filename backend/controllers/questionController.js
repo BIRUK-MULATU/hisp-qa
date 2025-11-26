@@ -47,8 +47,6 @@ exports.getQuestionById = async (req, res) => {
   }
 };
 
-
-
 // In searchQuestions():
 exports.searchQuestions = async (req, res) => {
   try {
