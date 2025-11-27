@@ -24,4 +24,7 @@ const optionalAuth = async (req, res, next) => {
 // Create question: works for both guest and logged-in users
 router.post('/', optionalAuth, questionController.createQuestion);
 
+// Admin delete
+router.delete('/:id', auth, questionController.deleteQuestion);
+
 module.exports = router;

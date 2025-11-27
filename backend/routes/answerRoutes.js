@@ -7,6 +7,11 @@ const auth = require('../middleware/authMiddleware');
 router.post('/:questionId', auth, answerController.createAnswer);
 
 // Get answers for question (public)
+// Get answers for question (public)
 router.get('/:questionId', answerController.getAnswersForQuestion);
+
+// Admin routes
+router.get('/', auth, answerController.getAllAnswers);
+router.delete('/:id', auth, answerController.deleteAnswer);
 
 module.exports = router;

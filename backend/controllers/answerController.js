@@ -43,3 +43,26 @@ exports.getAnswersForQuestion = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+// Admin methods
+exports.getAllAnswers = async (req, res) => {
+  try {
+    const answers = await Answer.find()
+      .populate('user', 'name email')
+      .populate('question', 'title')
+      .sort({ createdAt: -1 });
+    res.json(answers);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.deleteAnswer = async (req, res) => {
+  try {
+    const answer = await Answer.findByIdAndDelete(req.params.id);
+    if (!answer) return res.status(404).json({ message: 'Answer not found' });
+    res.json({ message: 'Answer deleted' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};

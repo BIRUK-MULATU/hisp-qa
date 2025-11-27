@@ -1,5 +1,5 @@
 import React from 'react';
-import { User, Calendar } from 'lucide-react';
+import { Calendar } from 'lucide-react';
 
 const AnswerCard = ({ answer }) => {
   return (

@@ -38,7 +38,13 @@ exports.getAllQuestions = async (req, res) => {
 
 exports.getQuestionById = async (req, res) => {
   try {
-    const q = await Question.findById(req.params.id).populate('topic').lean();
+    const q = await Question.findById(req.params.id)
+      .populate({
+        path: 'topic',
+        populate: { path: 'parent' }
+      })
+      .populate('user', 'name')
+      .lean();
     if (!q) return res.status(404).json({ message: 'Question not found' });
     const answers = await Answer.find({ question: q._id }).populate('user', 'name avatarUrl').lean();
     res.json({ question: q, answers });
@@ -62,6 +68,18 @@ exports.searchQuestions = async (req, res) => {
       .lean();
 
     res.json(questions);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.deleteQuestion = async (req, res) => {
+  try {
+    const question = await Question.findByIdAndDelete(req.params.id);
+    if (!question) return res.status(404).json({ message: 'Question not found' });
+    // Also delete answers
+    await Answer.deleteMany({ question: req.params.id });
+    res.json({ message: 'Question deleted' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
