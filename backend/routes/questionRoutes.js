@@ -1,53 +1,27 @@
 const express = require('express');
 const router = express.Router();
-const Question = require('../models/Question');
-const Answer = require('../models/Answer');
-const auth = require('../middleware/auth');
+const questionController = require('../controllers/questionController');
+const auth = require('../middleware/authMiddleware');
 
-// Create question
-router.post('/', auth, async (req,res)=>{
-  try{
-    const question = new Question({...req.body,user:req.user});
-    await question.save();
-    res.status(201).json(question);
-  } catch(err){ res.status(500).json({ error:err.message }); }
-});
+// public: list
+router.get('/', questionController.getAllQuestions);
 
-// Get all questions
-router.get('/', async (req,res)=>{
-  try{
-    const questions = await Question.find().sort({ createdAt:-1 });
-    res.json(questions);
-  } catch(err){ res.status(500).json({ error:err.message }); }
-});
+// search
+router.get('/search', questionController.searchQuestions);
 
-// Get single question with answers
-router.get('/:id', async (req,res)=>{
-  try{
-    const question = await Question.findById(req.params.id);
-    const answers = await Answer.find({ question:req.params.id });
-    res.json({ question, answers });
-  } catch(err){ res.status(500).json({ error:err.message }); }
-});
+// public: get single
+router.get('/:id', questionController.getQuestionById);
 
-// Upvote question
-router.post('/:id/upvote', auth, async (req,res)=>{
-  try{
-    const question = await Question.findById(req.params.id);
-    question.votes += 1;
-    await question.save();
-    res.json(question);
-  } catch(err){ res.status(500).json({ error:err.message }); }
-});
+// create question: guest allowed (but if user is logged in we can set req.user by using auth optionally)
+// We'll allow both: if Authorization provided, authMiddleware sets req.user, otherwise next without error.
+const optionalAuth = async (req, res, next) => {
+  const header = req.header('Authorization');
+  if (!header) return next();
+  // require middleware
+  return require('../middleware/authMiddleware')(req, res, next);
+};
 
-// Downvote question
-router.post('/:id/downvote', auth, async (req,res)=>{
-  try{
-    const question = await Question.findById(req.params.id);
-    question.votes -= 1;
-    await question.save();
-    res.json(question);
-  } catch(err){ res.status(500).json({ error:err.message }); }
-});
+// Create question: works for both guest and logged-in users
+router.post('/', optionalAuth, questionController.createQuestion);
 
 module.exports = router;

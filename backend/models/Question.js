@@ -1,13 +1,13 @@
 const mongoose = require('mongoose');
 
 const QuestionSchema = new mongoose.Schema({
-  title: { type: String, required: true },
+  title: { type: String, required: true, trim: true },
   body: { type: String, required: true },
-  tags: [String],
-  category: { type: String, default: "General" }, // ✅ fixed
-  votes: { type: Number, default: 0 },
-  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  topic: { type: mongoose.Schema.Types.ObjectId, ref: 'Topic', default: null }, // topic optional, guest can ask general
+  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null }, // guest post -> null
   createdAt: { type: Date, default: Date.now }
 });
 
+
+// Text index for fast searching
 module.exports = mongoose.model('Question', QuestionSchema);
