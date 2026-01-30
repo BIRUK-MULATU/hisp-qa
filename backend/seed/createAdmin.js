@@ -7,7 +7,7 @@ const env = require('../config/env');
 const run = async () => {
   await connectDB(env.MONGO_URI);
 
-  const admin = await User.findOne({ isAdmin: true });
+  const admin = await User.findOne({ email: env.FIRST_ADMIN_EMAIL });
   if (admin) {
     console.log('Admin already exists:', admin.email);
     process.exit(0);
